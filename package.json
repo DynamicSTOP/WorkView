@@ -1,0 +1,49 @@
+{
+  "name": "workview",
+  "version": "1.0.0",
+  "description": "analyze csv data",
+  "main": "index.js",
+  "scripts": {
+    "lint": "./node_modules/.bin/eslint ./src",
+    "lint-fix": "./node_modules/.bin/eslint ./src --fix",
+    "build": "./node_modules/.bin/eslint ./src --fix && ./node_modules/.bin/ts-node ./src/build.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DynamicSTOP/WorkView.git"
+  },
+  "author": "Leonid Babikov <workview@leonid.work>",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/DynamicSTOP/WorkView/issues"
+  },
+  "homepage": "https://github.com/DynamicSTOP/WorkView#readme",
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/react": "^18.0.14",
+    "@types/react-dom": "^18.0.5",
+    "@typescript-eslint/eslint-plugin": "^5.27.0",
+    "@typescript-eslint/parser": "^5.27.0",
+    "bootstrap": "^5.1.3",
+    "esbuild": "^0.14.45",
+    "eslint": "^8.16.0",
+    "eslint-import-resolver-typescript": "^2.7.1",
+    "eslint-plugin-array-func": "^3.1.7",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "eslint-plugin-sonarjs": "^0.13.0",
+    "eslint-plugin-unicorn": "^42.0.0",
+    "eslint-plugin-yml": "^1.0.0",
+    "prettier": "^2.6.2",
+    "react": "^18.2.0",
+    "react-bootstrap": "^2.4.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.3.0",
+    "ts-node": "^10.8.1",
+    "typescript": "^4.7.4"
+  }
+}

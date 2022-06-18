@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+  "name": "WorkView",
+  "version": "1.0.0",
+  "description": "Imports csv files for further analysis",
+  "browser_action": {},
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "short_name": "WV",
+  "permissions": [
+    "tabs"
+  ],
+  "web_accessible_resources": [
+    "img/*"
+  ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+}
