@@ -4,7 +4,7 @@ import {HashRouter, Route, Routes} from "react-router-dom";
 
 import {DataWrapper} from "./ui/DataWrapper";
 import {GeneralScreen} from "./ui/screens/GeneralScreen";
-import {WeekScreen} from "./ui/screens/WeekScreen";
+import {RawDataScreen} from "./ui/screens/RawDataScreen";
 import {WVNavBar} from "./ui/WVNavBar";
 
 export const WorkView = () => (
@@ -15,7 +15,7 @@ export const WorkView = () => (
                 <Row>
                     <Routes>
                         <Route path="/" element={<GeneralScreen/>}/>
-                        <Route path="/week" element={<WeekScreen/>}/>
+                        <Route path="/raw" element={<RawDataScreen/>}/>
                     </Routes>
                 </Row>
             </Container>

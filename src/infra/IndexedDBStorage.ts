@@ -1,5 +1,20 @@
-import type {AddCallback, Handler, Message, ParseRawData, RemoveCallback, RequestData} from "../types";
+import type {
+    AddCallback,
+    Handler,
+    Message,
+    Messages,
+    ParseRawData,
+    RawObject,
+    RemoveCallback,
+    RequestData
+} from "../types";
 import {MessageParams, MessageTypes} from "../types";
+import {aoaToObjects, CSVToArray} from "./ParseCSVString";
+
+const EARNING_STORE = 'earnings';
+const DATE_INDEX = 'Date';
+const CLIENTS_STORE = 'clients';
+const CONTRACTS_STORE = 'stores';
 
 export class IndexedDBStorage {
     private readonly listeners: Record<string, Handler[]>
@@ -20,14 +35,15 @@ export class IndexedDBStorage {
             this.dbOpened(request);
         };
         request.onupgradeneeded = () => {
-            if (!request.result.objectStoreNames.contains('earnings')) {
-                request.result.createObjectStore('earnings', {keyPath: 'date'});
+            if (!request.result.objectStoreNames.contains(EARNING_STORE)) {
+                const earningsStore = request.result.createObjectStore(EARNING_STORE, {keyPath: ['Date', 'Contract']});
+                earningsStore.createIndex(DATE_INDEX, DATE_INDEX, {unique: false});
             }
-            if (!request.result.objectStoreNames.contains('clients')) {
-                request.result.createObjectStore('clients', {keyPath: 'client', autoIncrement: true});
+            if (!request.result.objectStoreNames.contains(CLIENTS_STORE)) {
+                request.result.createObjectStore(CLIENTS_STORE, {keyPath: 'Client', autoIncrement: true});
             }
-            if (!request.result.objectStoreNames.contains('contracts')) {
-                request.result.createObjectStore('contracts', {keyPath: 'contracts', autoIncrement: true});
+            if (!request.result.objectStoreNames.contains(CONTRACTS_STORE)) {
+                request.result.createObjectStore(CONTRACTS_STORE, {keyPath: 'Contract', autoIncrement: true});
             }
             this.notify({[MessageParams.TYPE]: MessageTypes.DBReady});
         }
@@ -41,14 +57,53 @@ export class IndexedDBStorage {
     }
 
     public getData: RequestData = (from, to) => {
-        console.log('loading data from db', from, to, this.listenersLimit)
+        if (this.db) {
+            const {db} = this;
+            const transaction = db.transaction(EARNING_STORE, 'readonly');
+            const earningsStore: IDBObjectStore = transaction.objectStore(EARNING_STORE);
+            console.log(from, to);
+            const request = earningsStore.index(DATE_INDEX).getAll(IDBKeyRange.bound(from, to));
+            request.addEventListener('success', () => {
+                this.notify({
+                    [MessageParams.TYPE]: MessageTypes.EarningsListUpdate,
+                    [MessageParams.LIST]: request.result
+                })
+            });
+            request.addEventListener('error', () => {
+                console.log(request.error);
+            });
+        }
     }
 
     public parseRawData: ParseRawData = (rawData) => {
-        console.log('parsing raw data', rawData, this.listenersLimit)
+        if (typeof rawData === 'string' && this.db) {
+            const {db} = this;
+            const aoa = CSVToArray(rawData);
+            const data = aoaToObjects(aoa);
+
+            const transaction = db.transaction(EARNING_STORE, 'readonly');
+            const earningsStore: IDBObjectStore = transaction.objectStore(EARNING_STORE);
+            const request = earningsStore.getAll();
+
+            request.addEventListener('success', () => {
+                console.log(request.result);
+                console.log('parsing raw data', data);
+
+                const addTransaction = db.transaction(EARNING_STORE, 'readwrite');
+                const ESWrite = addTransaction.objectStore(EARNING_STORE);
+
+                data.forEach(earning => {
+                    console.log(earning.Date, earning.Contract);
+                    ESWrite.add(earning);
+                });
+                addTransaction.addEventListener('complete', () => {
+                    console.log('write complete');
+                });
+            });
+        }
     }
 
-    private readonly notify = (message: Message): void => {
+    private readonly notify = (message: Messages): void => {
         if (typeof this.listeners[message[MessageParams.TYPE]] !== 'undefined') {
             this.listeners[message[MessageParams.TYPE]].forEach(listener => {
                 try {

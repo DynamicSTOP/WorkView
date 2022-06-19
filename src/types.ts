@@ -2,8 +2,12 @@ export interface Message {
     [MessageParams.TYPE]: number
 }
 
-export type MessageEarningsList = Message & { [MessageParams.LIST]: Record<number, number> };
-export interface MessageDBReady { [MessageParams.TYPE]: MessageTypes.DBReady }
+export type MessageEarningsList = Message & { [MessageParams.LIST]: RawObject[] };
+
+export interface MessageDBReady {
+    [MessageParams.TYPE]: MessageTypes.DBReady
+}
+
 export type Messages = MessageEarningsList | MessageDBReady;
 
 export enum MessageTypes {
@@ -14,6 +18,17 @@ export enum MessageTypes {
 export enum MessageParams {
     TYPE,
     LIST
+}
+
+export interface RawObject {
+    "Amount": number
+    "Contract": string
+    "Contract Type": "Hourly" | "Fixed"
+    "Date": number
+    "Minutes": number
+    "Hourly Rate": number
+
+    [param: string]: unknown
 }
 
 export type Handler = (message: Messages) => void
